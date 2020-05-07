@@ -1,0 +1,67 @@
+I"7<p>Normally, before using a DirectShow filter dll, it has to be installed into Windows by means of regsvr32.exe. But there’s also a way to get use it without installation. The below code snippet shows how to do this.</p>
+
+<p>※The source code has not been tested yet!</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include &lt;dshow.h&gt;
+#include &lt;atlbase.h&gt;
+</span>
+<span class="n">HRESULT</span> <span class="nf">CreateDSFilterInstance</span><span class="p">(</span>
+    <span class="n">LPCTSTR</span> <span class="n">dll_file</span><span class="p">,</span>
+    <span class="n">LPCTSTR</span> <span class="n">clsid_str</span><span class="p">,</span> 
+    <span class="n">CComPtr</span><span class="o">&lt;</span><span class="n">IBaseFilter</span><span class="o">&gt;&amp;</span> <span class="n">instance</span><span class="p">)</span>
+<span class="p">{</span>
+   <span class="n">HRESULT</span> <span class="n">hr</span> <span class="o">=</span> <span class="n">S_OK</span><span class="p">;</span> 
+   <span class="n">GUID</span> <span class="n">clsid</span><span class="p">;</span>
+   <span class="n">HINSTANCE</span> <span class="n">hLib</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+   <span class="n">LPFNGETCLASSOBJECT</span> <span class="n">pfnGetClassObject</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+   <span class="n">CComPtr</span><span class="o">&lt;</span><span class="n">IClassFactory</span><span class="o">&gt;</span> <span class="n">class_factory</span><span class="p">;</span>
+
+   <span class="n">SetLastError</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+
+   <span class="c1">// Parse clsid_str</span>
+   <span class="n">hr</span> <span class="o">=</span> <span class="n">CLSIDFromString</span><span class="p">(</span><span class="n">T2COLE</span><span class="p">(</span><span class="n">clsid_str</span><span class="p">),</span> <span class="o">&amp;</span><span class="n">clsid</span><span class="p">);</span>
+   <span class="c1">// Error</span>
+   <span class="k">if</span> <span class="p">(</span><span class="n">FAILED</span><span class="p">(</span><span class="n">hr</span><span class="p">))</span>
+      <span class="k">return</span> <span class="n">hr</span><span class="p">;</span>
+
+   <span class="c1">// Load dll</span>
+   <span class="n">hLib</span> <span class="o">=</span> <span class="n">CoLoadLibrary</span><span class="p">(</span><span class="n">T2OLE</span><span class="p">((</span><span class="n">LPTSTR</span><span class="p">)</span><span class="n">dll_file</span><span class="p">),</span> <span class="n">TRUE</span><span class="p">);</span>
+   <span class="k">if</span> <span class="p">(</span><span class="nb">NULL</span> <span class="o">==</span> <span class="n">hLib</span><span class="p">){</span>
+      <span class="c1">// Error</span>
+      <span class="n">DWORD</span> <span class="n">dwError</span> <span class="o">=</span> <span class="n">GetLastError</span><span class="p">();</span>
+      <span class="k">if</span> <span class="p">(</span><span class="n">dwError</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
+         <span class="n">hr</span> <span class="o">=</span> <span class="n">HRESULT_FROM_WIN32</span><span class="p">(</span><span class="n">dwError</span><span class="p">);</span>
+      <span class="k">else</span>
+         <span class="n">hr</span> <span class="o">=</span> <span class="n">HRESULT_FROM_WIN32</span><span class="p">(</span><span class="n">ERROR_INVALID_DLL</span><span class="p">);</span>
+      <span class="k">return</span> <span class="n">hr</span><span class="p">;</span>
+   <span class="p">}</span>
+
+   <span class="c1">// Get DllGetClassObject function pointer</span>
+   <span class="n">pfnGetClassObject</span> <span class="o">=</span> <span class="p">(</span><span class="n">LPFNGETCLASSOBJECT</span><span class="p">)</span><span class="n">GetProcAddress</span><span class="p">(</span><span class="n">hLib</span><span class="p">,</span> <span class="s">"DllGetClassObject"</span><span class="p">);</span>
+   <span class="k">if</span> <span class="p">(</span><span class="nb">NULL</span> <span class="o">==</span> <span class="n">pfnGetClassObject</span><span class="p">){</span>
+      <span class="c1">// Error</span>
+      <span class="n">DWORD</span> <span class="n">dwError</span> <span class="o">=</span> <span class="n">GetLastError</span><span class="p">();</span>
+      <span class="k">if</span> <span class="p">(</span><span class="n">dwError</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
+         <span class="n">hr</span> <span class="o">=</span> <span class="n">HRESULT_FROM_WIN32</span><span class="p">(</span><span class="n">dwError</span><span class="p">);</span>
+      <span class="k">else</span>
+         <span class="n">hr</span> <span class="o">=</span> <span class="n">HRESULT_FROM_WIN32</span><span class="p">(</span><span class="n">ERROR_INVALID_DLL</span><span class="p">);</span>
+      <span class="k">return</span> <span class="n">hr</span><span class="p">;</span>
+   <span class="p">}</span>
+
+   <span class="c1">// Call DllGetClassObject to get class_factory </span>
+   <span class="n">hr</span> <span class="o">=</span> <span class="n">pfnGetClassObject</span><span class="p">(</span><span class="n">clsid</span><span class="p">,</span> <span class="n">IID_IClassFactory</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">class_factory</span> <span class="p">);</span>
+   <span class="c1">// Error</span>
+   <span class="k">if</span> <span class="p">(</span><span class="n">FAILED</span><span class="p">(</span><span class="n">hr</span><span class="p">))</span> 
+      <span class="k">return</span> <span class="n">hr</span><span class="p">;</span>
+
+   <span class="n">hr</span> <span class="o">=</span> <span class="n">class_factory</span><span class="o">-&gt;</span><span class="n">CreateInstance</span><span class="p">(</span><span class="nb">NULL</span><span class="p">,</span> <span class="kr">__uuidof</span><span class="p">(</span><span class="n">IBaseFilter</span><span class="p">),</span> <span class="p">(</span><span class="kt">void</span><span class="o">**</span><span class="p">)</span><span class="o">&amp;</span><span class="n">instance</span><span class="p">);</span>
+   <span class="k">return</span> <span class="n">hr</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Reference:</p>
+
+<p>(1) <a href="https://stackoverflow.com/questions/3560855/how-to-use-install-custom-directshow-filter">https://stackoverflow.com/questions/3560855/how-to-use-install-custom-directshow-filter</a></p>
+
+<p>(2) <a href="https://github.com/cplussharp/graph-studio-next">https://github.com/cplussharp/graph-studio-next</a></p>
+:ET
