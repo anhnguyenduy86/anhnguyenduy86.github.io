@@ -28,8 +28,8 @@ email: anhnguyenduy86@gmail.com
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "https://anhnguyenduy86.github.io" # the base hostname & protocol for your site, e.g. http://example.com
 #twitter_username: jekyllrb
-github_username:  anhnguyenduy86
-facebook_username: nguyenduyanh
+#github_username:  anhnguyenduy86
+#facebook_username: nguyenduyanh
 # Build settings
 #theme: minima
 plugins:
