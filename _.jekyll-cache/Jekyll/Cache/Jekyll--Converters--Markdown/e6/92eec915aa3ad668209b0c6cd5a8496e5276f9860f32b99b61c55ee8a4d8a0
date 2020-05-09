@@ -1,2 +1,0 @@
-I"ß<p>Normally, before using a DirectShow filter dll, it has to be installed into Windows by means of regsvr32.exe. But thereâ€™s also a way to get use it without installation. The below code snippet shows how to do this.</p>
-:ET
