@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Thêm các phần tử vào danh sách liên kết được sắp xép"
+title:  "Thêm các phần tử vào danh sách liên kết được sắp xếp"
 date:   2020-04-10 18:36:48 +0900
 tags: [C++, lamda function, binary search, upper_bound]
 ---
