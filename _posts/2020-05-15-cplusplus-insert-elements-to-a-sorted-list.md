@@ -2,7 +2,7 @@
 layout: post
 title:  "Thêm các phần tử vào danh sách liên kết được sắp xếp"
 date:   2020-04-10 18:36:48 +0900
-tags: [C++, lamda function, binary search, upper_bound]
+tags: C++ lamda_function binary_search upper_bound
 ---
 
 Đoạn mã nguồn dưới đây là một ví dụ sử dụng hàm upper_bound của thư viện std (standard template libary) có tham số là hàm so sánh hai phần tử ở dạng lamda function.
@@ -28,7 +28,7 @@ Hàm upper_bound dùng thuật toán tìm kiếm nhị phân (binary search) đ�
 
 Ở dạng (1), hàm upper_bound dùng toán tử so sánh nhỏ hơn (<) để so sánh hai phần tử trong dãy. Dạng (2) cho phép ta customize toán tử so sánh nhỏ hơn theo nhu cầu riêng bằng cách truyền hàm so sánh nhỏ hơn vào tham số comp. Hàm comp có dạng
 ```cpp
-bool function_name (const& T, const& T)
+bool function_name (const T&, const T&)
 ```
 
 Giải thích đoạn mã nguồn bên dưới:
@@ -62,7 +62,7 @@ int main(){
         int val = rand() % 20;
         
         // tạo một cặp (key,value)
-        auto rand_pair = shared_ptr<keyvalpair_t>(new keyvalpair_t()) ;
+        auto rand_pair = shared_ptr<keyvalpair_t>(new keyvalpair_t());
         rand_pair->first = key;
         rand_pair->second = val;
 
@@ -75,12 +75,12 @@ int main(){
     for(auto it = random_list.begin(); it != random_list.end(); ++it){
         // dùng hàm upper_bound (#include <algorithm>)
         // để tìm vị trí thêm vào theo thuật toán binary search
-        auto insert_pos =upper_bound(
+        auto insert_pos = upper_bound(
             key_sorted_list.begin(),
             key_sorted_list.end(),
             *it,
             // hàm so sánh nhỏ hơn (<) dưới dạng lamda function
-            [](const shared_ptr<keyvalpair_t> left, const shared_ptr<keyvalpair_t> right) -> bool{
+            [](const shared_ptr<keyvalpair_t>& left, const shared_ptr<keyvalpair_t>& right) -> bool{
                 return left->first < right->first;
             }
         );
@@ -98,14 +98,14 @@ int main(){
     // In danh sách liên kết không có thứ tự 
     cout << "random list:" << endl;
     for(auto it = random_list.begin(); it != random_list.end(); ++it){
-        cout << "(" << (*it)->first <<"," << (*it)->second << "), ";
+        cout << "(" << (*it)->first << "," << (*it)->second << "), ";
     }
     cout << endl;
 
     // In danh sách liên kết có thứ tự
     cout << "key sorted list:" << endl;
     for(auto it = key_sorted_list.begin(); it != key_sorted_list.end(); ++it){
-        cout << "(" << (*it)->first <<"," << (*it)->second << "), ";
+        cout << "(" << (*it)->first << "," << (*it)->second << "), ";
     }
 }
 ```

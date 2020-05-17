@@ -24,7 +24,10 @@ for filename in filenames:
         if crawl:
             current_tags = line.strip().split()
             if current_tags[0] == 'tags:':
+            #if line.strip().startswith('tags:') and len(line.strip()) > len('tags:') :
+                #current_tags = line[len('tags:'):].strip('[').strip(']').split(',')
                 total_tags.extend(current_tags[1:])
+                total_tags.extend(current_tags)
                 crawl = False
                 break
         if line.strip() == '---':
@@ -44,7 +47,7 @@ if not os.path.exists(tag_dir):
     os.makedirs(tag_dir)
 
 for tag in total_tags:
-    tag_filename = tag_dir + tag + '.md'
+    tag_filename = tag_dir + tag.strip() + '.md'
     f = open(tag_filename, 'a')
     write_str = '---\nlayout: tagpage\ntitle: \"Tag: ' + tag + '\"\ntag: ' + tag + '\nrobots: noindex\n---\n'
     f.write(write_str)
